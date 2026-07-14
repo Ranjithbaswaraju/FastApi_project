@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 try:
     db_pool = pooling.MySQLConnectionPool(
         pool_name="payroll_pool",
-        pool_size=5,
+        pool_size=2,
         host=settings.MYSQL_HOST,
         user=settings.MYSQL_USER,
         password=settings.MYSQL_PASSWORD,
