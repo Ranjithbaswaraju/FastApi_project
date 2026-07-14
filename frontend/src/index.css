@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+@theme {
+  --breakpoint-3xl: 1920px;
+  --breakpoint-4xl: 2560px;
+  --breakpoint-5xl: 3840px;
+}
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #f3f4f6; /* Default soft light grey background */
+  color: #111827;
+}
+
+/* Custom scrollbars for dashboard responsiveness */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Ensure 4K containers scale fluidly but maintain structure */
+.responsive-container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .responsive-container { max-width: 640px; }
+}
+@media (min-width: 768px) {
+  .responsive-container { max-width: 768px; }
+}
+@media (min-width: 1024px) {
+  .responsive-container { max-width: 1024px; }
+}
+@media (min-width: 1280px) {
+  .responsive-container { max-width: 1280px; }
+}
+@media (min-width: 1536px) {
+  .responsive-container { max-width: 1536px; }
+}
+@media (min-width: 1920px) {
+  .responsive-container { max-width: 1840px; }
+}
+@media (min-width: 2560px) {
+  .responsive-container { max-width: 2400px; }
+}
+@media (min-width: 3840px) {
+  .responsive-container { max-width: 3600px; }
+}
