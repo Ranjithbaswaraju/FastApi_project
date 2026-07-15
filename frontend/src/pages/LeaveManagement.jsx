@@ -20,6 +20,11 @@ const LeaveManagement = () => {
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState('success');
 
+  // Confirmations
+  const [isSubmitConfirmOpen, setIsSubmitConfirmOpen] = useState(false);
+  const [isApprovalConfirmOpen, setIsApprovalConfirmOpen] = useState(false);
+  const [pendingApproval, setPendingApproval] = useState({ id: null, status: '' });
+
   // Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
@@ -64,11 +69,13 @@ const LeaveManagement = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleFormSubmit = async (e) => {
+  const handleFormSubmit = (e) => {
     e.preventDefault();
-    if (!window.confirm("Are you sure you want to submit this leave request?")) {
-      return;
-    }
+    setIsSubmitConfirmOpen(true);
+  };
+
+  const executeFormSubmit = async () => {
+    setIsSubmitConfirmOpen(false);
     setFormLoading(true);
     try {
       const response = await api.post('/leaves', formData);
@@ -84,10 +91,14 @@ const LeaveManagement = () => {
     }
   };
 
-  const handleApprovalAction = async (id, status) => {
-    if (!window.confirm(`Are you sure you want to mark this leave request as ${status}?`)) {
-      return;
-    }
+  const handleApprovalAction = (id, status) => {
+    setPendingApproval({ id, status });
+    setIsApprovalConfirmOpen(true);
+  };
+
+  const executeApprovalAction = async () => {
+    const { id, status } = pendingApproval;
+    setIsApprovalConfirmOpen(false);
     try {
       const response = await api.put(`/leaves/${id}`, { status });
       setToastMessage(response.data.message);
@@ -302,6 +313,62 @@ const LeaveManagement = () => {
             </div>
           </form>
         </Modal>
+      )}
+
+      {/* Custom Submit Confirmation Modal */}
+      {isSubmitConfirmOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm">
+          <div className="bg-white p-6 rounded-2xl max-w-sm w-full mx-4 border border-gray-150 shadow-2xl space-y-4">
+            <h3 className="text-base font-bold text-gray-900">Confirm Leave Application</h3>
+            <p className="text-xs font-semibold text-gray-500">
+              Are you sure you want to submit this leave request? Your department manager will review the request.
+            </p>
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <button
+                onClick={() => setIsSubmitConfirmOpen(false)}
+                className="px-3.5 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={executeFormSubmit}
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-555 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-md shadow-indigo-650/10"
+              >
+                Confirm Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Approval/Rejection Confirmation Modal */}
+      {isApprovalConfirmOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm">
+          <div className="bg-white p-6 rounded-2xl max-w-sm w-full mx-4 border border-gray-150 shadow-2xl space-y-4">
+            <h3 className="text-base font-bold text-gray-900">Confirm Leave Action</h3>
+            <p className="text-xs font-semibold text-gray-500">
+              Are you sure you want to mark this request as <span className="font-bold text-gray-900">{pendingApproval.status}</span>? This action will generate/adjust attendance logs accordingly.
+            </p>
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <button
+                onClick={() => setIsApprovalConfirmOpen(false)}
+                className="px-3.5 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={executeApprovalAction}
+                className={`px-4 py-2 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-md ${
+                  pendingApproval.status === 'Approved'
+                    ? 'bg-emerald-650 hover:bg-emerald-600 shadow-emerald-600/10'
+                    : 'bg-rose-600 hover:bg-rose-500 shadow-rose-600/10'
+                }`}
+              >
+                Confirm {pendingApproval.status}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
